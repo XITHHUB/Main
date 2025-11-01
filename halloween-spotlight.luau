@@ -1,3 +1,6 @@
+--Time To Run
+task.wait(5);
+
 --Game Load Check
 if not game:IsLoaded() then
     repeat
@@ -7,7 +10,7 @@ end
 
 --In Game check
 local Ingame = false;
-if game.PlaceId == 11126398230 or game.PlaceId == 7633631103 then
+if game.PlaceId == 11126398230 or game.PlaceId == 7633631103 or game.PlaceId == 7633631351 or game.PlaceId == 7633631511 then
     Ingame = true;
 end
 
@@ -45,16 +48,30 @@ else
 end
 
 --Halloween Spotlight Part Halloween Trials
-if game.PlaceId == 7633631103 then
+if game.PlaceId == 7633631103 or game.PlaceId == 7633631351 or game.PlaceId == 7633631511 then
     local TrialsChapter = MainTab:NewSection("Halloween Trials [👻]");
     TrialsChapter:NewLabel("Section 0 : Candy Fram [🍬]");
-    TrialsChapter:NewButton("Get Candy 🍬 [Recursive Method 🔁]", "Auto play Section 1", function()
+    TrialsChapter:NewButton("Get Candy 🍬 [Recursive Method 🔁]", "Auto Get Candies all map.", function()
         local a=workspace.Candy:GetChildren()local function b()if not workspace.Candy:FindFirstChild("Candy")then return end;game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=workspace.Candy:FindFirstChild("Candy").CFrame+Vector3.new(0,5,0)task.wait(0.2)fireproximityprompt(workspace.Candy:FindFirstChild("Candy"):FindFirstChildOfClass("ProximityPrompt"))return b()end;b();
     end)
-    TrialsChapter:NewLabel("Section 1 : Ghost Hunt [👻]");
-    TrialsChapter:NewButton("Teleport [Recursive Method 🔁]", "Auto play Section 1", function()
-        local a=workspace.GameInfo.PuzzleItems:GetChildren()local function b(c)if not a[c]then return end;game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=a[c].CFrame+Vector3.new(0,5,0)task.wait(0.2)fireproximityprompt(a[c]:FindFirstChildOfClass("ProximityPrompt"))task.wait(.2)game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=workspace.Map.Well.Burner.CFrame+Vector3.new(0,5,0)task.wait(0.2)fireproximityprompt(workspace.Map.Well.Burner:FindFirstChildOfClass("ProximityPrompt"))return b(c+1)end;b(1);
-    end)
+    if game.PlaceId == 7633631103 then
+        TrialsChapter:NewLabel("Section 1 : Ghost Hunt [👻]");
+        TrialsChapter:NewButton("Teleport [Recursive Method 🔁]", "Auto play Section 1", function()
+            local a=workspace.GameInfo.PuzzleItems:GetChildren()local function b(c)if not a[c]then return end;game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=a[c].CFrame+Vector3.new(0,5,0)task.wait(0.2)fireproximityprompt(a[c]:FindFirstChildOfClass("ProximityPrompt"))task.wait(.2)game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=workspace.Map.Well.Burner.CFrame+Vector3.new(0,5,0)task.wait(0.2)fireproximityprompt(workspace.Map.Well.Burner:FindFirstChildOfClass("ProximityPrompt"))return b(c+1)end;b(1);
+        end)
+    end
+    if game.PlaceId == 7633631351 then
+        TrialsChapter:NewLabel("Section 2 : Candles [🏃‍♂️]");
+        TrialsChapter:NewButton("Auto Complete [Recursive Method 🔁]", "Auto play Section 2", function()
+            local a=workspace.Candles:GetChildren()local b=#a;local function c()return game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame end;local d=c()local function e()game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=d end;local function f(g)if g>b then return e()end;if a[g].Candles.ProximityPrompt.Enabled then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=a[g].Candles.CFrame+Vector3.new(0,3,0)task.wait(.2)fireproximityprompt(a[g].Candles:FindFirstChildOfClass("ProximityPrompt"))else g=g+1 end;return f(g)end;f(1);
+        end)
+    end
+    if game.PlaceId == 7633631511 then
+        TrialsChapter:NewLabel("Section 3 : Potions [🏃‍♂️]");
+        TrialsChapter:NewButton("Auto Complete [Recursive Method 🔁]", "Auto Make Potion kill monster.", function()
+            
+        end)
+    end
 end
 
 --Halloween Spotlight Part Cirus

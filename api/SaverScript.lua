@@ -1,151 +1,144 @@
--- Script Saver for Roblox Executors
--- Saves all scripts organized by service folders with path info in file
-
-local function saveAllScripts()
-    local savedCount = 0
-    local failedCount = 0
-    local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name:gsub("[%.%:%/\\%*%?\"<>|]", "_")
-    local baseFolder = "SavedScripts_" .. gameName .. "_" .. game.PlaceId
-    
-    -- Create base folder
-    if makefolder then
-        makefolder(baseFolder)
-    end
-    
-    -- Function to create folder path recursively
-    local function createFolderPath(path)
-        if makefolder then
-            local currentPath = ""
-            for folder in string.gmatch(path, "[^/]+") do
-                currentPath = currentPath == "" and folder or currentPath .. "/" .. folder
-                pcall(function()
-                    makefolder(currentPath)
-                end)
-            end
-        end
-    end
-    
-    -- Function to save scripts from a service
-    local function saveScriptsFromService(service, serviceName)
-        local serviceFolder = baseFolder .. "/" .. serviceName
-        createFolderPath(serviceFolder)
-        
-        local function processDescendants(instance, currentPath)
-            for _, child in pairs(instance:GetChildren()) do
-                local childPath = currentPath .. "/" .. child.Name:gsub("[%.%:%/\\%*%?\"<>|]", "_")
-                
-                if child:IsA("LocalScript") or child:IsA("Script") or child:IsA("ModuleScript") then
-                    local success, err = pcall(function()
-                        local source
-                        if decompile then
-                            source = decompile(child)
-                        else
-                            source = child.Source
-                        end
-                        
-                        if source and source ~= "" then
-                            local scriptType = child.ClassName
-                            local fullPath = child:GetFullName()
-                            local fileName = childPath .. "_[" .. scriptType .. "].lua"
-                            
-                            -- Create parent folders
-                            local parentPath = fileName:match("(.+)/[^/]+$")
-                            if parentPath then
-                                createFolderPath(parentPath)
-                            end
-                            
-                            -- Add script info header with path
-                            local header = string.format([[
---[[
-    ============================================
-    SCRIPT INFORMATION
-    ============================================
-    Script Name: %s
-    Script Type: %s
-    Full Path: %s
-    Parent: %s
-    Game Name: %s
-    Place ID: %d
-    ============================================
-    Saved by Script Saver
-    Date: %s
-    ============================================
---]]
-
-]], child.Name, scriptType, fullPath, child.Parent:GetFullName(), gameName, game.PlaceId, os.date("%Y-%m-%d %H:%M:%S"))
-                            
-                            -- Write file with header + source
-                            local fileContent = header .. source
-                            writefile(fileName, fileContent)
-                            
-                            savedCount = savedCount + 1
-                            print("[SAVED] " .. fullPath)
-                        end
-                    end)
-                    
-                    if not success then
-                        failedCount = failedCount + 1
-                        warn("[FAILED] " .. child:GetFullName() .. " - " .. tostring(err))
-                    end
-                end
-                
-                -- Process children (folders/instances containing scripts)
-                if #child:GetChildren() > 0 then
-                    if not (child:IsA("LocalScript") or child:IsA("Script") or child:IsA("ModuleScript")) then
-                        createFolderPath(childPath)
-                    end
-                    processDescendants(child, childPath)
-                end
-            end
-        end
-        
-        local success = pcall(function()
-            processDescendants(service, serviceFolder)
-        end)
-        
-        if not success then
-            warn("[SERVICE INACCESSIBLE] " .. serviceName)
-        end
-    end
-    
-    print("========================================")
-    print("Script Saver - Starting...")
-    print("Game: " .. gameName)
-    print("PlaceId: " .. game.PlaceId)
-    print("Save Location: " .. baseFolder)
-    print("========================================")
-    
-    -- Save scripts from each service into separate folders
-    local services = {
-        {game:GetService("Workspace"), "Workspace"},
-        {game:GetService("ReplicatedStorage"), "ReplicatedStorage"},
-        {game:GetService("ReplicatedFirst"), "ReplicatedFirst"},
-        {game:GetService("StarterGui"), "StarterGui"},
-        {game:GetService("StarterPack"), "StarterPack"},
-        {game:GetService("StarterPlayer"), "StarterPlayer"},
-        {game:GetService("Lighting"), "Lighting"},
-        {game:GetService("SoundService"), "SoundService"},
-        {game:GetService("Chat"), "Chat"},
-        {game:GetService("LocalizationService"), "LocalizationService"},
-        {game:GetService("TestService"), "TestService"},
-    }
-    
-    -- Try server services (may fail on client)
-    pcall(function() table.insert(services, {game:GetService("ServerScriptService"), "ServerScriptService"}) end)
-    pcall(function() table.insert(services, {game:GetService("ServerStorage"), "ServerStorage"}) end)
-    
-    for _, serviceData in pairs(services) do
-        local service, serviceName = serviceData[1], serviceData[2]
-        print("[SCANNING] " .. serviceName .. "...")
-        saveScriptsFromService(service, serviceName)
-    end
-    
-    print("========================================")
-    print("Script Saver - Complete!")
-    print("========================================")
-    print("Total Saved: " .. savedCount .. " scripts")
-    print("Total Failed: " .. failedCount .. " scripts")
-    print("========================================")
+local a = {}
+local function b(c)
+    table.insert(a, c)
+    print(c)
 end
-
-saveAllScripts()
+local function d(c)
+    table.insert(a, c)
+    warn(c)
+end
+local function e(f)
+    local g = f:gsub('[<>:"/\\|?*%z]', "_")
+    g = g:gsub("%.+$", "")
+    if g == "" then
+        g = "_"
+    end
+    return g
+end
+local function h(i)
+    local j = {}
+    local k = i
+    while k and k ~= game do
+        table.insert(j, 1, e(k.Name))
+        k = k.Parent
+    end
+    return j
+end
+local function l(j)
+    local m = "ScriptDump"
+    if not isfolder(m) then
+        makefolder(m)
+    end
+    for n = 1, #j - 1 do
+        m = m .. "/" .. j[n]
+        if not isfolder(m) then
+            makefolder(m)
+        end
+    end
+    return m
+end
+b("\n")
+b("📜 Script Saver - Dumping all scripts")
+b("=====================================\n")
+local o = {}
+if not getscripts then
+    table.insert(o, "getscripts")
+end
+if not writefile then
+    table.insert(o, "writefile")
+end
+if not makefolder then
+    table.insert(o, "makefolder")
+end
+if not isfolder then
+    table.insert(o, "isfolder")
+end
+if #o > 0 then
+    d("⛔ Missing required functions: " .. table.concat(o, ", "))
+    d("⛔ Script dumping cannot proceed.")
+    return
+end
+if not isfolder("ScriptDump") then
+    makefolder("ScriptDump")
+end
+local p = getscripts()
+local q = 0
+local r = 0
+local s = 0
+b("📊 Found " .. #p .. " scripts in game\n")
+for t, u in ipairs(p) do
+    local v = u.ClassName
+    local w = h(u)
+    local x = ".lua"
+    if v == "ModuleScript" then
+        x = ".module.lua"
+    elseif v == "LocalScript" then
+        x = ".client.lua"
+    elseif v == "Script" then
+        x = ".server.lua"
+    end
+    local y = nil
+    if decompile then
+        local z, A =
+            pcall(
+            function()
+                return decompile(u)
+            end
+        )
+        if z and A and #A > 0 then
+            y = A
+        end
+    end
+    if not y and getscriptbytecode then
+        local z, A =
+            pcall(
+            function()
+                return getscriptbytecode(u)
+            end
+        )
+        if z and A and #A > 0 then
+            y = "-- Raw bytecode (decompile not available)\n" .. A
+        end
+    end
+    if y then
+        l(w)
+        local B = w[#w] .. x
+        local C = "ScriptDump"
+        for n = 1, #w - 1 do
+            C = C .. "/" .. w[n]
+        end
+        local D = C .. "/" .. B
+        local E, F =
+            pcall(
+            function()
+                writefile(D, y)
+            end
+        )
+        if E then
+            q = q + 1
+            b("✅ Saved: " .. D)
+        else
+            r = r + 1
+            d("⛔ Failed to save: " .. D .. " - " .. tostring(F))
+        end
+    else
+        s = s + 1
+        d("⚠️ Skipped (no source): " .. table.concat(w, "/"))
+    end
+    if (q + r + s) % 10 == 0 then
+        task.wait()
+    end
+end
+b("\n=====================================")
+b("📜 Script Saver - Complete")
+b("=====================================")
+b("✅ Saved: " .. q .. " scripts")
+b("⛔ Failed: " .. r .. " scripts")
+b("⚠️ Skipped: " .. s .. " scripts")
+b("📁 Output folder: ScriptDump/")
+pcall(
+    function()
+        writefile("scriptsaver_results.txt", table.concat(a, "\n"))
+        print("\n📄 Log saved to scriptsaver_results.txt")
+    end
+)
